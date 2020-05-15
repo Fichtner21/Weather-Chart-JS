@@ -154,8 +154,8 @@ export async function weatherView() {
                 // tworzymy customowy tooltip i ustawiamy wszystkie niezbędne parametry
                 const tooltip = document.createElement('div');
                 tooltip.id = 'weather-icon-tooltip';
-                tooltip.style.top = `${data.caretY + 40}px`;
-                tooltip.style.left = `${data.caretX + 40}px`;
+                tooltip.style.top = `${data.caretY}px`;
+                tooltip.style.left = `${data.caretX}px`;
 
                 tooltip.innerHTML = `<i class="fas ${icon}"></i> <span>${Math.round(weatherPoint.yLabel)}</span>`;
 
