@@ -80,28 +80,10 @@ export async function weatherView() {
   const tempToDisplay = barczewoTemp.map((entry) => entry.main.temp_max);
   const timeToDisplay = barczewoTemp.map((entry) => entry.dt);
 
-  //   const tempMin = barczewoTemp.map((entry) => entry.rain['3h']);
-  //   console.log(tempMin);
   const arr = [];
   const tempFeelsLike = barczewoTemp.map((entry) => entry.main.feels_like);
   const wIcon = barczewoTemp.map((entry, index) => arr.push([index, entry.weather[0].icon]));
-  //const wIcon = barczewoTemp.map((entry) => entry.weather[0].icon);
 
-  console.log(arr);
-
-  // const convertedIcon = wIcon.map(function (el) {
-  //   const conIcon = getIcon(el);
-  //   const newIcon = document.createElement('i');
-  //   newIcon.className = conIcon;
-  //   //const newIcon = document.createElement('div');
-  //   //newIcon.innerHTML = `<i class="${conIcon}"></i>`;
-  //   return newIcon;
-  //   //return conIcon;
-  // });
-
-  // console.log(convertedIcon);
-
-  console.log(timeToDisplay);
   const newMyDate = timeToDisplay.map(function (el) {
     const temp = new Date(parseInt(el, 10) * 1000);
     el = temp.toISOString();
@@ -151,16 +133,6 @@ export async function weatherView() {
         //     offset: 10,
         //   },
         // },
-        // {
-        //   label: 'ikony',
-        //   data: wIcon,
-        //   borderColor: 'yellow',
-        //   xAxisID: 'B',
-        //   fill: false,
-        //   datalabels: {
-        //     labels: {},
-        //   },
-        // },
       ],
     },
     plugins: [ChartDataLabels],
@@ -175,33 +147,21 @@ export async function weatherView() {
             // mamy tylko jeden dataset, więc bierzemy pierwszy element dla danego punktu
             const weatherPoint = item[0];
 
-            // w zmiennej weatherPoint mamy dostęp do wartości czy też indexu danego punktu
-            console.log(weatherPoint);
+            const goodIcon = arr.forEach((arritem) => {
+              if (arritem[0] === weatherPoint.index) {
+                const icon = getIcon(arritem[1]);
 
-            // tutaj logiga na podstawie której wybieramy ikonkę na podstawie danych z weatherPoint
-            // dla przykładu losowa ikona, musisz tutaj to obsłużyć po swojemu na podstawie danych z weatherPoint
-            // const randomIconKey = ['01d', '02d', '03d', '04d', '09d', '10d', '11d'][Math.floor(Math.random() * 6)];
-            //console.log('to jest log z indexu weatherPointa ' + weatherPoint.index);
-            //console.log(arr[[1]]);
-            console.log(this);
-            // if (weatherPoint.index === arr[[1]]) {
-            //   console.log('indexy pasują');
-            // } else {
-            //   console.log('indexy nie pasują');
-            // }
-            const randomIconKey = arr;
-            //console.log('to jest index 1 tablicy arr ' + randomIconKey);
-            const icon = getIcon(randomIconKey);
+                // tworzymy customowy tooltip i ustawiamy wszystkie niezbędne parametry
+                const tooltip = document.createElement('div');
+                tooltip.id = 'weather-icon-tooltip';
+                tooltip.style.top = `${data.caretY + 40}px`;
+                tooltip.style.left = `${data.caretX + 40}px`;
 
-            // tworzymy customowy tooltip i ustawiamy wszystkie niezbędne parametry
-            const tooltip = document.createElement('div');
-            tooltip.id = 'weather-icon-tooltip';
-            tooltip.style.top = `${data.caretY + 40}px`;
-            tooltip.style.left = `${data.caretX + 40}px`;
+                tooltip.innerHTML = `<i class="fas ${icon}"></i> <span>${Math.round(weatherPoint.yLabel)}</span>`;
 
-            tooltip.innerHTML = `<i class="fas ${icon}"></i> <span>${weatherPoint.yLabel}</span>`;
-
-            document.getElementById('weather').appendChild(tooltip);
+                document.getElementById('weather').appendChild(tooltip);
+              }
+            });
           } else {
             // brak modelu danych, kasujemy element tooltipa
             const existing = document.getElementById('weather-icon-tooltip');
