@@ -11,17 +11,24 @@
     <div id="app">
       <nav class="navbar navbar-light bg-light">
         <a href="#">Home</a>        
-        <a href="#weather">Weather</a>
+        <a href="#weather">Prognoza 5 dniowa (interwał co 3h)</a>
+        <a href="#onecall">Prognoza 7 dniowa</a>
       </nav>
 
       <div class="container view hidden" id="home">
         <h1>Hello!</h1>
+        <div>Projekt zaliczeniowy</div>
       </div>
       
       <div class="container view hidden" id="weather">
-        <h1>Weather</h1>
+        <h1>Prognoza 5 dniowa(interwał co 3h)</h1>
         <canvas id="weather-canvas"></canvas>
         <canvas id="canvas"></canvas>
+      </div>
+      <div class="container view hidden" id="onecall">
+        <h1>Prognoza 7 dniowa</h1>
+        <canvas id="onecall-canvas"></canvas>
+        <canvas id="canvas-one"></canvas>
       </div>
     </div>
   </body>

@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import { weatherView } from './views/weather';
+import { oneCall } from './views/onecall';
 
 function enableRouting() {
   function setRoute() {
@@ -17,6 +18,7 @@ function enableRouting() {
 
 document.addEventListener('DOMContentLoaded', () => {
   weatherView();
+  oneCall();
 
   enableRouting();
 });
