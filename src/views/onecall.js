@@ -2,6 +2,7 @@ import { Chart } from 'chart.js';
 import $ from 'jquery';
 import * as ChartDataLabels from 'chartjs-plugin-datalabels';
 import __ from 'lodash';
+import pattern from 'patternomaly';
 
 //Funkcja asynchroniczna do pobrania danych z API Openweathermap.org
 export async function oneCall() {
@@ -16,15 +17,15 @@ export async function oneCall() {
   //wykluczenie danych godzinowych dla API
   const daysSeven = await getOneCall('hourly');
 
-  //przejściena dane dziennie (8 wartości, dzisiaj + 7 dni)
+  //pobranie dni (8 wartości, dzisiaj + 7 dni)
   const daysSevenList = daysSeven.daily;
   console.log(daysSevenList);
 
-  //pobranie czasów z API, czasy są w formacie unixowym
+  //pobranie konkretego czas dla dnia a API (format unix)
   const daysSevenDate = daysSevenList.map((entry) => entry.dt);
   console.log(daysSevenDate);
 
-  //przekonwertowanie czasu unixowego na daty w formacie MM-DD-RRRR
+  //przekonwertowanie czasu unixowego na daty w formacie MM-DD
   const daysSevenDateConvert = daysSevenDate.map(function (el) {
     const convertDate = new Date(parseInt(el, 10) * 1000);
     el = convertDate.toISOString();
@@ -32,6 +33,7 @@ export async function oneCall() {
     return cutDate;
   });
 
+  //Wyciagniecie numerów dni tygodnia np. 0 - niedziela, 3 - środa.
   const convertedWeek = [];
   daysSevenDate.forEach(function (val) {
     const myDate = new Date(val * 1000).getDay();
@@ -39,6 +41,7 @@ export async function oneCall() {
     return myDate;
   });
 
+  //Switch do zamiany dni tygodnia z integerów na stringi
   function conv(value) {
     let dayConv = '';
     switch (value) {
@@ -68,25 +71,15 @@ export async function oneCall() {
     }
     return dayConv;
   }
-
+  //cd zamiany na polskie nazwy dni tygodnia
   const polishDaysName = [];
-  convertedWeek.forEach(function (val, index) {
+  convertedWeek.forEach(function (val) {
     polishDaysName.push(conv(val));
   });
 
-  console.log(`po forEach ${polishDaysName}`);
-  console.log(polishDaysName);
-
-  console.log(daysSevenDateConvert);
-
-  const concatDaysAndDates = polishDaysName.concat(...daysSevenDateConvert);
-  console.log('concatDaysAndDates ' + concatDaysAndDates);
-
+  //połączenie dwóch tablic tak aby indexy w starych tablicach po połączeniu w jedną tablicę zachowały swój natywny index -> czyli ['a','b'],[1,2] => [['a',1],['b',2]]
   const lodashZipObject = __.zip(polishDaysName, daysSevenDateConvert);
-  console.log(lodashZipObject);
   const newArr = Object.values(lodashZipObject);
-  console.log('TO JEST ZIP ARRAYS');
-  console.log(newArr);
 
   const daysSevenTemp = daysSevenList.map((entry) => Math.round(entry.temp.max));
   console.log(daysSevenTemp);
@@ -122,17 +115,72 @@ export async function oneCall() {
           type: 'bar',
           data: removeUndefinedRain,
           borderColor: 'blue',
-          fill: 'lightblue',
+          backgroundColor: [
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+            pattern.draw('dash', '#006bff'),
+          ],
           datalabels: {
+            display: function (context) {
+              return context.dataset.data[context.dataIndex] !== 0; //ukrycie wartości == 0
+            },
             labels: {
               title: null,
+              // title: {
+              //   color: 'blue',
+              // },
             },
           },
         },
       ],
     },
     plugins: [ChartDataLabels],
-    options: {},
+    options: {
+      tooltips: {
+        // callbacks: {
+        //   title: function (tooltipItem, data) {
+        //     return data.labels[tooltipItem[0].index];
+        //   },
+        //   label: function (tooltipItem, data) {
+        //     return data.datasets[0].data[tooltipItem.index];
+        //   },
+        //   afterLabel: function (tooltipItem, data) {
+        //     const dataset = data.datasets[0];
+        //     const percent = Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100);
+        //     return '(' + percent + '%)';
+        //   },
+        // },
+        backgroundColor: '#FFF',
+        titleFontSize: 16,
+        titleFontColor: '#0066ff',
+        bodyFontColor: '#000',
+        bodyFontSize: 14,
+        displayColors: false,
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+      },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              //padding: 25,
+            },
+          },
+        ],
+      },
+    },
   };
 
   const oneCallChart = new Chart(canvasOne, configOne);
