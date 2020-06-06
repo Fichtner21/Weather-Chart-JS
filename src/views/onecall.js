@@ -142,19 +142,6 @@ export async function oneCall() {
     plugins: [ChartDataLabels],
     options: {
       tooltips: {
-        // callbacks: {
-        //   title: function (tooltipItem, data) {
-        //     return data.labels[tooltipItem[0].index];
-        //   },
-        //   label: function (tooltipItem, data) {
-        //     return data.datasets[0].data[tooltipItem.index];
-        //   },
-        //   afterLabel: function (tooltipItem, data) {
-        //     const dataset = data.datasets[0];
-        //     const percent = Math.round((dataset.data[tooltipItem.index] / dataset._meta[0].total) * 100);
-        //     return '(' + percent + '%)';
-        //   },
-        // },
         backgroundColor: '#FFF',
         titleFontSize: 16,
         titleFontColor: '#0066ff',
