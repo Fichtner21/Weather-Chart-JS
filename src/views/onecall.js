@@ -19,11 +19,9 @@ export async function oneCall() {
 
   //pobranie dni (8 wartości, dzisiaj + 7 dni)
   const daysSevenList = daysSeven.daily;
-  console.log(daysSevenList);
 
   //pobranie konkretego czas dla dnia a API (format unix)
   const daysSevenDate = daysSevenList.map((entry) => entry.dt);
-  console.log(daysSevenDate);
 
   //przekonwertowanie czasu unixowego na daty w formacie MM-DD
   const daysSevenDateConvert = daysSevenDate.map(function (el) {
@@ -82,10 +80,8 @@ export async function oneCall() {
   const newArr = Object.values(lodashZipObject);
 
   const daysSevenTemp = daysSevenList.map((entry) => Math.round(entry.temp.max));
-  console.log(daysSevenTemp);
   const daysSevenRain = daysSevenList.map((entry) => entry.rain);
   const removeUndefinedRain = daysSevenRain.map((item) => (item === undefined ? 0 : item));
-  console.log(removeUndefinedRain);
 
   const canvasOne = $('#onecall-canvas').get(0).getContext('2d');
 

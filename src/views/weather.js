@@ -11,88 +11,26 @@ export async function weatherView() {
     return json;
   }
 
-  function getIcon($icon) {
-    switch ($icon) {
-      case '01d': {
-        return '<i class="fas fa-sun"></i>';
-      }
-      case '02d': {
-        return '<i class="fas fa-cloud-sun"></i>';
-      }
-      case '03d': {
-        return '<i class="fas fa-cloud"></i>';
-      }
-      case '04d': {
-        return '<i class="fas fa-cloud"></i>';
-      }
-      case '09d': {
-        return '<i class="fas fa-cloud-rain"></i>';
-      }
-      case '10d': {
-        return '<i class="fas fa-cloud-sun-rain"></i>';
-      }
-      case '11d': {
-        return '<i class="fas fa-bolt"></i>';
-      }
-      case '13d': {
-        return '<i class="fas fa-snowflake"></i>';
-      }
-      case '50d': {
-        return '<i class="fas fa-smog"></i>';
-      }
-      case '01n': {
-        return '<i class="fas fa-moon"></i>';
-      }
-      case '02n': {
-        return '<i class="fas fa-cloud-moon"></i>';
-      }
-      case '03n': {
-        return '<i class="fas fa-cloud"></i>';
-      }
-      case '04n': {
-        return '<i class="fas fa-cloud"></i>';
-      }
-      case '09n': {
-        return '<i class="fas fa-cloud-rain"></i>';
-      }
-      case '10n': {
-        return '<i class="fas fa-cloud-moon-rain"></i>';
-      }
-      case '11n': {
-        return '<i class="fas fa-bolt"></i>';
-      }
-      case '13n': {
-        return '<i class="fas fa-snowflake"></i>';
-      }
-      case '50n': {
-        return '<i class="fas fa-smog"></i>';
-      }
-      default: {
-        return '<i class="fas fa-cloud"></i>';
-      }
-    }
-  }
-
   function getImageFromURL(imgCODE) {
     const iconURL = 'http://openweathermap.org/img/w/' + imgCODE + '.png';
 
     return iconURL;
   }
 
-  const barczewo = await getDataForStation('7530858');
+  const city = await getDataForStation('7530858'); //Poznań
 
-  const barczewoTemp = barczewo.list;
+  const cityTemp = city.list;
 
-  const tempToDisplay = barczewoTemp.map((entry) => Math.round(entry.main.temp_max));
-  const timeToDisplay = barczewoTemp.map((entry) => entry.dt);
+  const tempToDisplay = cityTemp.map((entry) => Math.round(entry.main.temp_max));
+  const timeToDisplay = cityTemp.map((entry) => entry.dt);
 
   const limitedTemperaturesArray = tempToDisplay.slice(0, 30);
   const limitedTimesArray = timeToDisplay.slice(0, 30);
 
   const iconsArray = [];
-  const tempFeelsLike = barczewoTemp.map((entry) => entry.main.feels_like);
+  //const tempFeelsLike = cityTemp.map((entry) => entry.main.feels_like);
 
-  const wIcon = barczewoTemp.map((entry, index) => iconsArray.push({ index: index, icon: getImageFromURL(entry.weather[0].icon) }));
+  cityTemp.map((entry, index) => iconsArray.push({ index: index, icon: getImageFromURL(entry.weather[0].icon) }));
 
   const newMyDate = limitedTimesArray.map(function (el) {
     const temp = new Date(parseInt(el, 10) * 1000);
@@ -102,13 +40,13 @@ export async function weatherView() {
     return toCut;
   });
 
-  // Show tooltips always even the stats are zero
+  // Pokazanie wszystkich tooltipów
 
   Chart.pluginService.register({
     beforeRender: function (chart) {
       if (chart.config.options.showAllTooltips) {
-        // create an array of tooltips
-        // we can't use the chart tooltip because there is only one tooltip per chart
+        // stworznenie tablicy tooltipów
+        // nie mozemy korzystać z toolipa z chart.js bo oferuje mozliwość tylko jednego tooltipa dla wykresu, dlatego trzeba stworzyć tablice
         chart.pluginTooltips = [];
         chart.config.data.datasets.forEach(function (dataset, i) {
           chart.getDatasetMeta(i).data.forEach(function (sector, j) {
@@ -128,24 +66,24 @@ export async function weatherView() {
           });
         });
 
-        // turn off normal tooltips
+        // wyłączenie domyślnych tooltipów
         chart.options.tooltips.enabled = false;
       }
     },
     afterDraw: function (chart, easing) {
       if (chart.config.options.showAllTooltips) {
-        // we don't want the permanent tooltips to animate, so don't do anything till the animation runs atleast once
+        // wyłączenie animacji przy pokazywaniu tooltipów
         if (!chart.allTooltipsOnce) {
           if (easing !== 1) return;
           chart.allTooltipsOnce = true;
         }
 
-        // turn on tooltips
+        // włączenie tooltipów
         chart.options.tooltips.enabled = true;
         Chart.helpers.each(chart.pluginTooltips, function (tooltip) {
           tooltip.initialize();
           tooltip.update();
-          // we don't actually need this since we are not animating tooltips
+          // tak naprawdę nie potrzebujemy tego, ponieważ nie animujemy tooltipów
           tooltip.pivot();
           tooltip.transition(easing).draw();
         });
@@ -182,7 +120,6 @@ export async function weatherView() {
     },
     plugins: [ChartDataLabels],
     options: {
-      // In options, just use the following line to show all the tooltips
       showAllTooltips: true,
       events: ['click'],
       tooltips: {
